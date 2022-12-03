@@ -1,0 +1,6 @@
+# Peer-to-peer-studying-site
+ - Node.js
+ - React.js
+ - Mongo db
+
+//Please if you see anything else add it here.
