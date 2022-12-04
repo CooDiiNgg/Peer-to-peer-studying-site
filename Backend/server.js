@@ -3,7 +3,18 @@ let app = express();
 const { MongoClient, ServerApiVersion } = require('mongodb');
 const uri = "mongodb+srv://Mongo_db_base:<Parola>@peer-to-peer-studying-s.kjmhrnm.mongodb.net/?retryWrites=true&w=majority";
 const dbClient = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 });
-
+// try{
+//     dbClient.connect(err => {
+//         const collection_users = dbClient.db("school").collection("users");
+//         collection_users.find({username: "Ivan"}).toArray(function(err, result){
+//             if(err){}
+//             console.log(result);
+//         })
+//         dbClient.close()
+//     });
+// }catch(err){
+//     throw err;
+// }
 
 
 
@@ -13,21 +24,29 @@ app.post('/login', function(req, res) {
         full_data += data;
     }).on("end", () => {
         let user = JSON.parse(full_data);
+        try {
         dbClient.connect((err) => {
             const collection_users = dbClient.db("school").collection("users");
-            collection_users.find({username: `${user.username}`}).toArray(function(err, result){
+            collection_users.find({username: user.username}).toArray(function(err, result){
                 if(err){
-                    //user does not exist
+                    // console.log("Very no")
+                    throw err;
                 }
                 else if(result[0].password === user.password){
-                    //everything fine
+                    console.log("Yes")
                 }
                 else{
-                    //password is not the same
+                    console.log("No")
                 }
                 dbClient.close();
             });
+            
           });
+        } catch(err) {
+            if(err) throw err;
+        }
+
+          res.end();
           return;
     });
 
