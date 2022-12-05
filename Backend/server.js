@@ -7,6 +7,7 @@ const dbClient = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopolog
 
 
 
+
 app.post('/login', function(req, res) {
     let full_data = "";
     req.on("data", function(data){
@@ -21,7 +22,9 @@ app.post('/login', function(req, res) {
                     res.send('{"status": "error", "msg": "User does not exist."}')
                 }
                 else if(result[0].password === user.password){
-                    res.send(`{"status": "success", "isTeacher": "${result[0].isTeacher}"}`)
+                    res.send(`{"status": "success", "isTeacher": "${result[0].isTeacher}"}`);
+                    // session
+
 
                 }
                 else{
@@ -41,6 +44,30 @@ app.post('/login', function(req, res) {
 
   
 
+});
+
+
+app.post('/register', function (req, res) {
+  let full_data = "";
+  req.on("data", function(dat){
+    full_data += dat
+  }).on("end", function(){
+    let info = JSON.parse(full_data);
+    try{
+        dbClient.connect((err) => {
+            let collection = dbClient.db("school").collection("users");
+            collection.insertOne({name: info.username, password: info.password, isTeacher: 0, email: ""}, function(err, res){
+                if(err) throw err;
+                res.send('{"status": "success"}');
+                dbClient.close();
+            })
+        });
+    } catch(err){
+        throw err;
+    }
+    res.end()
+    return;
+  })
 });
 
 
