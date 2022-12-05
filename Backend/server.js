@@ -1,20 +1,9 @@
 let express = require("express")
 let app = express();
 const { MongoClient, ServerApiVersion } = require('mongodb');
-const uri = "mongodb+srv://Mongo_db_base:<Parola>@peer-to-peer-studying-s.kjmhrnm.mongodb.net/?retryWrites=true&w=majority";
+const uri = "mongodb+srv://Mongo_db_base:Parola@peer-to-peer-studying-s.kjmhrnm.mongodb.net/?retryWrites=true&w=majority";
 const dbClient = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 });
-// try{
-//     dbClient.connect(err => {
-//         const collection_users = dbClient.db("school").collection("users");
-//         collection_users.find({username: "Ivan"}).toArray(function(err, result){
-//             if(err){}
-//             console.log(result);
-//         })
-//         dbClient.close()
-//     });
-// }catch(err){
-//     throw err;
-// }
+
 
 
 
@@ -29,14 +18,14 @@ app.post('/login', function(req, res) {
             const collection_users = dbClient.db("school").collection("users");
             collection_users.find({username: user.username}).toArray(function(err, result){
                 if(err){
-                    // console.log("Very no")
-                    throw err;
+                    res.send('{"status": "error", "msg": "User does not exist."}')
                 }
                 else if(result[0].password === user.password){
-                    console.log("Yes")
+                    res.send(`{"status": "success", "isTeacher": "${result[0].isTeacher}"}`)
+
                 }
                 else{
-                    console.log("No")
+                    res.send('{"status": "error", "msg": "Password is incorrect."}')
                 }
                 dbClient.close();
             });
