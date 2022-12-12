@@ -3,6 +3,7 @@ let app = express();
 const { MongoClient, ServerApiVersion } = require('mongodb');
 const uri = "mongodb+srv://Mongo_db_base:Parola@peer-to-peer-studying-s.kjmhrnm.mongodb.net/?retryWrites=true&w=majority";
 const dbClient = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 });
+const sha1 = require("sha1")
 
 
 
@@ -22,7 +23,7 @@ app.post('/login', function (req, res) {
                         throw err;
                     }
                     try{
-                        if (result[0].password === user.password) {
+                        if (result[0].password === sha1(user.password)) {
                             //res.send(`{"status": "success", "isTeacher": "${result[0].isTeacher}"}`);
                             // session
                             console.log(`{"status": "success", "isTeacher": "${result[0].isTeacher}"}`);
@@ -70,7 +71,7 @@ app.post('/register', function (req, res) {
                         //res.send('{"status": "error", "msg": "This user already exists."}');
                         console.log('{"status": "error", "msg": "This user already exists."}');
                     }catch(err){
-                        collection.insertOne({ username: info.username, password: info.password, isTeacher: "0", email: "" }, function (err, res) {
+                        collection.insertOne({ username: info.username, password: sha1(info.password), isTeacher: "0", email: "" }, function (err, res) {
                             if (err) throw err;
                             //res.send('{"status": "success"}');
                             console.log('{"status": "success"}');
