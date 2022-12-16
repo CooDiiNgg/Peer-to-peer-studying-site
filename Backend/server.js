@@ -8,6 +8,7 @@ const sha1 = require("sha1")
 function login(username, password) {
     try {
         dbClient.connect((err) => {
+            if(err) throw err;
             const collection_users = dbClient.db("school").collection("users");
             collection_users.find({ username: username }).toArray(function (err, result) {
                 if (err) {
@@ -33,7 +34,7 @@ function login(username, password) {
             });
 
         });
-    } catch (err) {
+    }catch (err) {
         if (err) throw err;
     }
 }
@@ -41,6 +42,7 @@ function login(username, password) {
 function register(username, password, isTeacher, email){
     try {
         dbClient.connect((err) => {
+            if(err) throw err;
             let collection = dbClient.db("school").collection("users");
             collection.find({username: username}).toArray((err, result) => {
                 if(err) throw err;
@@ -48,6 +50,7 @@ function register(username, password, isTeacher, email){
                     var check = result[0].password;
                     //res.send('{"status": "error", "msg": "This user already exists."}');
                     console.log('{"status": "error", "msg": "This user already exists."}');
+                    dbClient.close();
                 }catch(err){
                     collection.insertOne({ username: username, password: sha1(password), isTeacher: isTeacher, email: email }, function (err, res) {
                         if (err) throw err;
@@ -57,10 +60,9 @@ function register(username, password, isTeacher, email){
                     });
                 }
             });
-            
         });
     } catch (err) {
-        throw err;
+       if(err) throw err;
     }
 }
 
@@ -78,9 +80,6 @@ app.post('/login', function (req, res) {
         res.end();
         return;
     });
-
-
-
 });
 
 
