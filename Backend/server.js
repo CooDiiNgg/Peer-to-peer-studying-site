@@ -4,6 +4,15 @@ const { MongoClient, ServerApiVersion } = require('mongodb');
 const uri = "mongodb+srv://Mongo_db_base:Parola@peer-to-peer-studying-s.kjmhrnm.mongodb.net/?retryWrites=true&w=majority";
 const dbClient = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 });
 const sha1 = require("sha1")
+const session = require("express-session");
+const MongoStore = require("connect-mongo")(session);
+
+app.use(session({
+    secret: "secret",
+    resave: false,
+    saveUninitialized: true,
+    store: new MongoStore({ mongooseConnection: dbClient })
+}));
 
 function login(username, password) {
     try {
@@ -17,7 +26,6 @@ function login(username, password) {
                 try{
                     if (result[0].password === sha1(password)) {
                         //res.send(`{"status": "success", "isTeacher": "${result[0].isTeacher}"}`);
-                        // session
                         console.log(`{"status": "success", "isTeacher": "${result[0].isTeacher}"}`);
 
                     }
