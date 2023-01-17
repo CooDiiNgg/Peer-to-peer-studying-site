@@ -14,39 +14,40 @@ app.use(session({
     store: new MongoStore({ mongooseConnection: dbClient })
 }));
 
-function login(username, password) {
+/*
+function login(input_username, input_password) {
+    let result = '';
     try {
         dbClient.connect((err) => {
             if(err) throw err;
             const collection_users = dbClient.db("school").collection("users");
-            collection_users.find({ username: username }).toArray(function (err, result) {
+            collection_users.find({ username: input_username }).toArray(function (err, result) {
                 if (err) {
                     throw err;
                 }
-                try{
-                    if (result[0].password === sha1(password)) {
-                        //res.send(`{"status": "success", "isTeacher": "${result[0].isTeacher}"}`);
-                        console.log(`{"status": "success", "isTeacher": "${result[0].isTeacher}"}`);
-
-                    }
-                    else {
-                        //res.send('{"status": "error", "msg": "Password is incorrect."}');
-                        console.log('{"status": "error", "msg": "Password is incorrect."}')
-                    }
-                }catch(err){
+                if (!result[0]){
                     //res.send('{"status": "error", "msg": "User does not exist."}');
-                    console.log('{"status": "error", "msg": "User does not exist."}')
+                    result = '{"status": "error", "msg": "User does not exist."}';
+                    dbClient.close();
                 }
-                
-                dbClient.close();
+                else if (result[0].password === sha1(input_password)) {
+                    //res.send(`{"status": "success", "isTeacher": "${result[0].isTeacher}"}`);
+                    result = `{"status": "success", "isTeacher": "${result[0].isTeacher}"}`;
+                    dbClient.close();
+                }
+                else {
+                    //res.send('{"status": "error", "msg": "Password is incorrect."}');
+                    result = '{"status": "error", "msg": "Password is incorrect."}';
+                    dbClient.close();
+                }                
             });
-
         });
     }catch (err) {
         if (err) throw err;
     }
+    return result;
 }
-
+*/
 function register(username, password, isTeacher, email){
     try {
         dbClient.connect((err) => {
@@ -84,7 +85,9 @@ app.post('/login', function (req, res) {
         full_data += data;
     }).on("end", () => {
         let user = JSON.parse(full_data);
-        login(user.username, user.password);
+        //let status = login(user.username, user.password);
+        console.log("test");
+        res.send("Hello");
         res.end();
         return;
     });
