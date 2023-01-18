@@ -57,19 +57,18 @@ function register(username: string, password: string, isTeacher: boolean, email:
 			let collection = dbClient.db("school").collection("users");
 			collection.find({ username: username }).toArray((err: any, result: Array<IUser>) => {
 				if (err) throw err;
-				try {
-					var check = result[0].password;
-					//res.send('{"status": "error", "msg": "This user already exists."}');
+				if (result[0] !== undefined) {
 					console.log('{"status": "error", "msg": "This user already exists."}');
 					dbClient.close();
-				} catch (err) {
-					collection.insertOne({ username: username, password: sha1(password), isTeacher: isTeacher, email: email }, function (err: Error, res: any) {
-						if (err) throw err;
-						//res.send('{"status": "success"}');
-						console.log('{"status": "success"}');
-						dbClient.close();
-					});
+					return
 				}
+				collection.insertOne({ username: username, password: sha1(password), isTeacher: isTeacher, email: email }, function (err: Error, res: any) {
+					if (err) throw err;
+					//res.send('{"status": "success"}');
+					console.log('{"status": "success"}');
+					dbClient.close();
+				});
+
 			});
 		});
 	} catch (err) {
